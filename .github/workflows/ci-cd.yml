@@ -7,20 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout source
       uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-
-    - name: Set up Maven
-      run: sudo apt-get install -y maven
-
-    - name: Update version patch
+    - name: Update version patch in pom.xml
       id: versioning
       run: |
         version_file=pom.xml
@@ -31,12 +23,9 @@ jobs:
         sed -i "s|<version>$old_version</version>|<version>$new_version</version>|" $version_file
         echo "version=$new_version" >> $GITHUB_OUTPUT
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
     - name: Docker build (multi-stage)
       run: |
-        docker build --build-arg JAR_VERSION=${{ steps.versioning.outputs.version }} -t myapp:${{ steps.versioning.outputs.version }} .
+        docker build -t myapp:${{ steps.versioning.outputs.version }} .
 
     - name: Log in to DockerHub
       uses: docker/login-action@v3
