@@ -3,7 +3,8 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main ]
-    
+  workflow_dispatch:
+
 permissions:
   contents: write
 
@@ -27,13 +28,12 @@ jobs:
         echo "version=$new_version" >> $GITHUB_OUTPUT
 
     - name: Commit and push new version
-  run: |
-    git config user.name "github-actions[bot]"
-    git config user.email "github-actions[bot]@users.noreply.github.com"
-    git add pom.xml
-    git commit -m "chore: bump version to ${{ steps.versioning.outputs.version }}"
-    git push origin HEAD:${{ github.ref_name }}
-
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add pom.xml
+        git commit -m "chore: bump version to ${{ steps.versioning.outputs.version }}"
+        git push origin HEAD:${{ github.ref_name }}
 
     - name: Docker build (multi-stage)
       run: |
