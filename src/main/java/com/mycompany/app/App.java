@@ -11,6 +11,9 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(MESSAGE);
+		
+		String version = App.class.getPackage().getImplementationVersion();
+		System.out.println("Version: " + (version != null ? version : "unknown"));
     }
 
     public String getMessage() {
